@@ -14,6 +14,41 @@ function App() {
     }
   };
 
+  const handleTurn = () => {
+    setPickOne(null);
+    setPickTwo(null);
+    setDisabled(false);
+  };
+
+  useEffect(() => {
+    let pickTimer;
+
+    // Two cards have been clicked
+    if (pickOne && pickTwo) {
+      // Check if the cards the same
+      if (pickOne.image === pickTwo.image) {
+        setCards((prevCards) => {
+          return prevCards.map((card) => {
+            if (card.image === pickOne.image) {
+              // Update card property to reflect match
+              return { ...card, matched: true };
+            } else {
+              // No match
+              return card;
+            }
+          });
+        });
+        handleTurn();
+      } else {
+        // Prevent new selections until after delay
+        setDisabled(true);
+        // Add delay between selections
+        pickTimer = setTimeout(() => {
+          handleTurn();
+        }, 1000);
+      }
+    }
+
   return (
     <>
       <div className='grid'>
