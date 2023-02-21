@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Card from './components/Card';
 import shuffle from './utilities/shuffle';
 
@@ -7,7 +7,9 @@ function App() {
   const [pickOne, setPickOne] = useState(null); // First selection
   const [pickTwo, setPickTwo] = useState(null); // Second selection
   const [disabled, setDisabled] = useState(false); // Delay handler
+  const [wins, setWins] = useState(0); // Win streak
 
+  // Handle card selection
   const handleClick = (card) => {
     if (!disabled) {
       pickOne ? setPickTwo(card) : setPickOne(card);
@@ -20,6 +22,7 @@ function App() {
     setDisabled(false);
   };
 
+  // Used for selection and match handling
   useEffect(() => {
     let pickTimer;
 
@@ -48,6 +51,25 @@ function App() {
         }, 1000);
       }
     }
+
+    return () => {
+      clearTimeout(pickTimer);
+    };
+  }, [cards, pickOne, pickTwo]);
+
+  // If player has found all matches, handle accordingly
+  useEffect(() => {
+    // Check for any remaining card matches
+    const checkWin = cards.filter((card) => !card.matched);
+
+    // All matches made, handle win/badge counters
+    if (cards.length && checkWin.length < 1) {
+      console.log('You win!');
+      setWins(wins + 1);
+      handleTurn();
+      setCards(shuffle);
+    }
+  }, [cards, wins]);
 
   return (
     <>
